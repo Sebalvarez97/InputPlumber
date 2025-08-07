@@ -77,15 +77,18 @@ impl DsuTarget {
                         }
 
                         match msg_type {
-                            0x0010_0001 | 0x100001 => { // Controller Info
+                            0x100001 => { // Controller Info
+                                log::info!("[DSU] ControllerInfo request from {addr}");
                                 let hdr = ControllerHeader { slot: 0, ..Default::default() };
                                 let pkt = build_controller_info(0x1337_0001, hdr);
                                 let _ = socket.send_to(&pkt, addr);
                             }
-                            0x0010_0002 | 0x100002 => { // Controller Data subscribe
+                            0x100002 => { // Controller Data subscribe
+                                log::info!("[DSU] ControllerData subscribe from {addr}");
                                 // Nada más que registrar. El envío lo hace write_event() o un loop de envío.
                             }
                             _ => {
+                                log::debug!("[DSU] Unknown msg_type=0x{msg_type:08x} from {addr}, len={n}");
                                 // Ignorar otros por ahora
                             }
                         }
@@ -127,6 +130,11 @@ impl DsuTarget {
 
         let hdr = ControllerHeader { slot: 0, ..Default::default() };
         let pkt = build_controller_data(self.server_id, hdr, data);
+
+        if !clients.is_empty() && (self.pkt_counter % 120 == 0) {
+            // log cada ~120 paquetes para no inundar
+            log::info!("[DSU] Sending motion to {} client(s). pn={}", clients.len(), self.pkt_counter);
+        }
 
         for addr in clients {
             let _ = self.socket.send_to(&pkt, addr);
