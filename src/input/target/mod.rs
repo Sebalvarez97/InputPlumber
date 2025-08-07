@@ -64,6 +64,7 @@ pub mod unified_gamepad;
 pub mod xb360;
 pub mod xbox_elite;
 pub mod xbox_series;
+pub mod dsu;
 
 /// Possible errors for a target device client
 #[derive(Error, Debug)]
@@ -246,6 +247,11 @@ impl TargetDeviceTypeId {
                 id: "debug",
                 name: "Debug Device",
                 device_class: TargetDeviceClass::Debug,
+            },
+            TargetDeviceTypeId {
+                id: "dsu",
+                name: "DSU Server",
+                device_class: TargetDeviceClass::Gamepad,
             },
         ]
     }
@@ -868,6 +874,11 @@ impl TargetDevice {
                 let device = UnifiedGamepadDevice::new()?;
                 let driver = TargetDriver::new(id, device, dbus);
                 Ok(Self::UnifiedGamepad(driver))
+            }
+            "dsu" => {
+                let device = DsuTarget::new()?;
+                let driver = TargetDriver::new(id, device, dbus);
+                Ok(Self::Debug(driver))
             }
             "null" => Ok(Self::Null),
             _ => Ok(Self::Null),
