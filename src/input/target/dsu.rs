@@ -12,6 +12,7 @@ use crate::input::{
 
 use std::collections::HashSet;
 
+#[derive(Debug)]
 pub struct DsuTarget {
     // Aquí puedes agregar config más adelante (host, puerto, etc.)
 }
@@ -25,11 +26,11 @@ impl DsuTarget {
 // Implementa recepción de eventos (ej. giroscopio)
 impl TargetInputDevice for DsuTarget {
     fn write_event(&mut self, event: NativeEvent) -> Result<(), crate::input::target::InputError> {
-        let cap = event.capability();
+        let cap = event.as_capability();
 
         match cap {
             Capability::Gamepad(Gamepad::Gyro) | Capability::Gamepad(Gamepad::Accelerometer) => {
-                if let InputValue::Vector3 { x, y, z } = event.value() {
+                if let InputValue::Vector3 { x, y, z } = event.get_value() {
                     println!(
                         "DSU Event - {:?}: x={:?}, y={:?}, z={:?}",
                         cap, x, y, z

@@ -916,6 +916,7 @@ impl TargetDevice {
             TargetDevice::XBoxElite(_) => vec!["xbox-elite".try_into().unwrap()],
             TargetDevice::XBoxSeries(_) => vec!["xbox-series".try_into().unwrap()],
             TargetDevice::UnifiedGamepad(_) => vec!["unified-gamepad".try_into().unwrap()],
+            TargetDevice::Dsu(_) => vec!["dsu".try_into().unwrap()],
         }
     }
 
