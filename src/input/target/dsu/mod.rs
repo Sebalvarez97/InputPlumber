@@ -144,6 +144,7 @@ impl DsuTarget {
 
 impl TargetInputDevice for DsuTarget {
     fn write_event(&mut self, event: NativeEvent) -> Result<(), InputError> {
+        log::info!("[DSU] Event received: {:?}", event.as_capability());
         match (event.as_capability(), event.get_value()) {
             (Capability::Gamepad(Gamepad::Accelerometer), InputValue::Vector3 { x, y, z }) => {
                 // El spec quiere "g". Nuestros eventos ya vienen en "g" (BmiImu usa g; AccelGyro3D multiplica por 10).
