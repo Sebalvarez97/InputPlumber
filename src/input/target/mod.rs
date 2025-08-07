@@ -47,6 +47,7 @@ use self::touchscreen::TouchscreenDevice;
 use self::xb360::XBox360Controller;
 use self::xbox_elite::XboxEliteController;
 use self::xbox_series::XboxSeriesController;
+use self::dsu::DsuTarget;
 
 pub mod client;
 pub mod command;
@@ -750,6 +751,7 @@ pub enum TargetDevice {
     XBoxElite(TargetDriver<XboxEliteController>),
     XBoxSeries(TargetDriver<XboxSeriesController>),
     UnifiedGamepad(TargetDriver<UnifiedGamepadDevice>),
+    Dsu(TargetDriver<DsuTarget>),
 }
 
 impl TargetDevice {
@@ -878,7 +880,7 @@ impl TargetDevice {
             "dsu" => {
                 let device = DsuTarget::new()?;
                 let driver = TargetDriver::new(id, device, dbus);
-                Ok(Self::Debug(driver))
+                Ok(Self::Dsu(driver))
             }
             "null" => Ok(Self::Null),
             _ => Ok(Self::Null),
@@ -935,6 +937,7 @@ impl TargetDevice {
             TargetDevice::XBoxElite(device) => Some(device.client()),
             TargetDevice::XBoxSeries(device) => Some(device.client()),
             TargetDevice::UnifiedGamepad(device) => Some(device.client()),
+            TargetDevice::Dsu(device) => Some(device.client()),
         }
     }
 
@@ -956,6 +959,7 @@ impl TargetDevice {
             TargetDevice::XBoxElite(device) => device.run().await,
             TargetDevice::XBoxSeries(device) => device.run().await,
             TargetDevice::UnifiedGamepad(device) => device.run().await,
+            TargetDevice::Dsu(device) => device.run().await,
         }
     }
 }
